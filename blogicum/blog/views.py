@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from django.http import Http404
+from django.shortcuts import render
 
 
 posts = [
@@ -46,22 +46,25 @@ posts = [
 ]
 
 
+posts_dict = {post['id']: post for post in posts}
+
+
 def index(request):
-    return render(request,
-                  'blog/index.html',
+    return render(request, 'blog/index.html',
                   {'posts': list(reversed(posts))})
 
 
 def post_detail(request, post_id):
     template_name = 'blog/detail.html'
-    for post in posts:
-        if post['id'] == post_id:
-            context = {'post': post}
-            return render(request, template_name, context)
+    post = posts_dict.get(post_id)
+    if post:
+        context = {'post': post}
+        return render(request, template_name, context)
     raise Http404("Пост не найден")
 
 
 def category_posts(request, category_slug):
-    return render(request,
-                  'blog/category.html',
-                  {'posts': posts, 'category_slug': category_slug})
+    return render(request, 'blog/category.html', {
+        'posts': posts, 
+        'category_slug': category_slug,
+    })
